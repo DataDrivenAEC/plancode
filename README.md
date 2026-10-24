@@ -1,2 +1,9 @@
-# arch-harness
-Open-source AI agent harness for architecture: design as code, building rules as tests.
+# Plancode
+
+Architecture design as code.
+
+An open-source AI agent harness for architecture: the building lives in text files (OpenUSD with exact geometry from usd-brep), versioned with git; an agent edits it through architectural operations; building-code rules run as tests after every change; the architect follows each step in a live 3D view.
+
+**Status:** early planning. Code follows.
+
+Licence: Apache-2.0
