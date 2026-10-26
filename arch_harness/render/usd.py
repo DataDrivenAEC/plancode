@@ -64,11 +64,14 @@ def write_usd(model: dict, outdir) -> list[pathlib.Path]:
         path.write_text(stage.GetRootLayer().ExportToString(), encoding="utf-8")
         written.append(path)
         sublayers.append(f"./storeys/{st['id']}.usda")
-    root = _stage()
-    prim = root.GetPrimAtPath("/Building")
-    prim.SetCustomDataByKey("ah:project", model["project"]["name"])
-    prim.SetCustomDataByKey("ah:schema", model["schema"])
-    layer = root.GetRootLayer()
+    from pxr import Sdf
+    layer = Sdf.Layer.CreateAnonymous(".usda")  # Sdf only: no composition, so relative sublayers stay unresolved
+    layer.pseudoRoot.SetInfo("metersPerUnit", 0.001)
+    layer.pseudoRoot.SetInfo("upAxis", "Z")
+    spec = Sdf.CreatePrimInLayer(layer, "/Building")
+    spec.specifier, spec.typeName = Sdf.SpecifierDef, "Xform"
+    spec.customData = {"ah": {"project": model["project"]["name"], "schema": model["schema"]}}
+    layer.defaultPrim = "Building"
     layer.subLayerPaths = list(reversed(sublayers))  # strongest first; storeys do not overlap
     layer.documentation = "arch-harness render of model.json (the source of truth). Do not edit by hand."
     path = outdir / "building.usda"

@@ -107,7 +107,8 @@ def run_study(project, max_rounds: int = 5) -> dict:
 
         loop = run_loop(design, params, model_dir, max_rounds=max_rounds, on_round=on_round)
         entry = {"variant": name, "branch": f"variant/{name}", "converged": loop["converged"],
-                 "reason": loop["reason"], "rounds": len(loop["rounds"]), "last": loop["rounds"][-1], "cost": None}
+                 "reason": loop["reason"], "rounds": len(loop["rounds"]), "last": loop["rounds"][-1], "cost": None,
+                 "round_log": [_round_message(r) for r in loop["rounds"]]}
         if loop["converged"]:
             ifc = export_ifc(loop["model"], model_dir / "model.ifc")
             entry["cost"] = estimate(ifc, source, outdir=model_dir / "cost")
