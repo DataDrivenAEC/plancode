@@ -19,6 +19,10 @@ PATH=$PWD/../../.tools/node/bin:$PATH PI_CODING_AGENT_DIR=$PWD/../pi-agent \
   ../../node_modules/.bin/pi -e ../../adapters/pi --no-builtin-tools --model ollama/qwen3.6:27b
 ```
 
+Ollama serves 4096 tokens of context by default; DESIGN.md plus the tool schemas need more, so start the Ollama
+server with a larger context (for example `OLLAMA_CONTEXT_LENGTH=32768`). Skills are listed to the model only when
+it has the `read` tool (`--tools read,…` or no `--no-builtin-tools`).
+
 Settings: `AH_PYTHON` (default `<repo>/.conda-ah/bin/python`), `AH_PROJECT` (default the working directory),
 `AH_MAX_ROUNDS`. Any model pi supports works; with a local model (Ollama) nothing leaves the machine.
 
