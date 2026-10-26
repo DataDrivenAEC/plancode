@@ -105,3 +105,18 @@ def test_a_kind_with_no_checks_is_not_reported_as_passed(model, write_model):
     assert report["by_kind"]["brief"]["passed"] == 0
     assert "brief" in report["unconfirmed_kinds"]
     assert report["passed"] is False
+
+
+def test_a_rule_with_nothing_to_check_is_unconfirmed_not_passed(model, write_model):
+    model["spaces"] = [s for s in model["spaces"] if s["use"] != "corridor"]  # the corridor rule has no element
+    report = run_rules(write_model(model))
+    assert report["by_kind"]["code"]["passed"] > 0  # the kind still passes on its other rules
+    assert [u["rule"] for u in report["unconfirmed_rules"]] == ["DIN18040-1/4.3.2/corridor-width"]
+    assert report["passed"] is False
+
+
+def test_abstandsflaeche_rounds_up_like_the_generator(model, write_model):
+    model["building"]["height"] = 9993  # 0.4 H = 3997.2 mm: 3997 mm is short
+    model["building"]["x"] = 3997
+    [f] = failures(run_rules(write_model(model)), "MBO/6(5)/abstandsflaeche-on-plot")
+    assert f["data"]["required"] == 3998

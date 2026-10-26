@@ -68,3 +68,28 @@ def test_model_json_is_canonical(clinic_design_path):
     d = load_design(clinic_design_path)
     text = dumps_model(generate(d, effective_parameters(d)))
     assert text == json.dumps(json.loads(text), sort_keys=True, indent=1, ensure_ascii=False) + "\n"
+
+
+def _overlap(a, b):
+    return all(min(a["max"][i], b["max"][i]) - max(a["min"][i], b["min"][i]) > 0 for i in range(3))
+
+
+def structural_clashes(model):
+    """Pairs of walls and slabs sharing volume (doors sit in their wall's opening, spaces are not material)."""
+    from arch_harness.model import solids
+    parts = [b for b in solids(model) if b["kind"] in ("wall", "slab")]
+    return [(a["id"], b["id"]) for i, a in enumerate(parts) for b in parts[i + 1:] if _overlap(a, b)]
+
+
+def test_clash_check_catches_a_slab_inside_a_wall(model):
+    model["slabs"] = [{"id": "S", "storey": "L0", "x": 0, "y": 0, "w": 9000, "d": 9000, "z": 3000, "thickness": 220,
+                       "role": "floor"}]
+    assert structural_clashes(model) == [("L0-W01", "S"), ("L0-W02", "S")]
+
+
+def test_walls_stop_at_the_underside_of_the_slab_above(clinic_design_path):
+    d = load_design(clinic_design_path)
+    for variant in (None, "timber"):
+        m = generate(d, effective_parameters(d, variant))
+        assert structural_clashes(m) == []
+        assert {w["height"] for w in m["walls"]} == {m["parameters"]["storey_height"] - m["parameters"]["slab_thickness"]}

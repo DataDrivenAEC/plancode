@@ -9,17 +9,14 @@ from __future__ import annotations
 
 import math
 
+from ..codes import abstandsflaeche as setback  # the rule in rules/ checks the same function
+
 GENERATOR = {"name": "massing-double-loaded", "version": "0.1"}
 # Design defaults (not code minimums): used only when DESIGN.md does not state the parameter.
 DEFAULTS = {"max_storeys": 3, "storey_height": 3200, "corridor_width": 1500, "door_width": 900, "door_height": 2050,
             "room_depth": 5000, "exterior_wall": 365, "interior_wall": 115, "slab_thickness": 220,
             "structure": "masonry"}
 STEP = 100  # room widths and building length snap to 100 mm
-
-
-def setback(height: int) -> int:
-    """MBO § 6 Abs. 5 Satz 1: 0,4 H, at least 3 m (the rule in rules/rule_code_mbo6_abstandsflaechen.py checks it)."""
-    return max(3000, math.ceil(0.4 * height))
 
 
 def _instances(design: dict, n_storeys: int) -> list[dict]:

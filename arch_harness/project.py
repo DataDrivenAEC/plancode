@@ -8,6 +8,7 @@ import pathlib
 import shutil
 import subprocess
 
+from .checks import kinds_line
 from .design import effective_parameters, load_design
 from .loop import run_loop
 from .model import write_model
@@ -77,10 +78,8 @@ def build(project, variant: str | None = None, overrides: dict | None = None) ->
 
 
 def _round_message(record: dict) -> str:
-    k = record["by_kind"]
-    head = (f"round {record['round']}: " + ("all rules pass" if record["passed"] else "failing") +
-            f" (code {k['code']['failed']} failed/{k['code']['passed']} passed, geometry {k['geometry']['failed']}/"
-            f"{k['geometry']['passed']}, brief {k['brief']['failed']}/{k['brief']['passed']})")
+    state = "all rules pass" if record["passed"] else "failing"
+    head = f"round {record['round']}: {state} ({kinds_line(record['by_kind'])})"
     revs = ", ".join(f"{r['param']} {r['from']}→{r['to']}" for r in record["revisions"])
     return head + (f"; revise {revs}" if revs else "")
 

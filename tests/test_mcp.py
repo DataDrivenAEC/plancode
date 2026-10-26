@@ -71,6 +71,16 @@ def test_generate_then_check_through_mcp(client):
     assert svg.startswith("<svg")
 
 
+def test_run_loop_keeps_the_rounds_the_hooks_recorded(client):
+    client.request("initialize", {"protocolVersion": "2025-06-18"})
+    client.call("generate_massing")
+    client.call("ah_after_step")
+    loop = client.call("run_loop")["structuredContent"]
+    assert [r["round"] for r in loop["rounds"]] == [2, 3]
+    status = client.call("ah_context")["structuredContent"]
+    assert status["rounds"] == 3 and status["passed"] is True
+
+
 def test_unknown_tool_is_an_error_result(client):
     client.request("initialize", {})
     msg = client.request("tools/call", {"name": "nope", "arguments": {}})

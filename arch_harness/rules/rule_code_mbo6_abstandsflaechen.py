@@ -1,6 +1,7 @@
 """Code rule from the Musterbauordnung (MBO), § 6 Abstandsflächen."""
 import pytest
 
+from arch_harness.codes import abstandsflaeche
 from conftest import fail
 
 
@@ -11,7 +12,7 @@ def test_abstandsflaeche_on_plot(model, side):
     Abstandsflächen must lie on the plot itself. Simplification: H is the building height in the model (no roof
     pitch, no parapet); the relief onto public land (§ 6 Abs. 2 Satz 2) and the Länder variants are not applied."""
     b, site = model["building"], model["site"]
-    required = max(3000, int(round(0.4 * b["height"])))
+    required = abstandsflaeche(b["height"])
     distance = {"west": b["x"], "south": b["y"],
                 "east": site["width"] - b["x"] - b["w"], "north": site["depth"] - b["y"] - b["d"]}[side]
     if distance < required:

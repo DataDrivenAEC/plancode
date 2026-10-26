@@ -6,7 +6,7 @@ first implementation.
 
 | # | Call | When the harness makes it | Returns |
 |---|------|---------------------------|---------|
-| 1 | `ah_after_step` | after every tool call that changes the model (`generate_massing`, `run_loop`) | `round`, `passed`, `by_kind`, `failures`, `revisions`, and `text` to append to the tool result |
+| 1 | `ah_after_step` | after every tool call that changes the model (`generate_massing`, `run_loop`) | `round`, `passed`, `by_kind`, `failures`, `unconfirmed_rules` (rules with no element to check: never counted as passed), `revisions`, and `text` to append to the tool result |
 | 2 | `ah_before_settle(max_rounds, since_round)` | when the agent is about to finish | `settle` (bool) and `reason`; `settle=false` while rules fail and fewer than `max_rounds` rounds ran since `since_round`; at the limit `settle=true` with "cannot converge …" |
 | 3 | `ah_context` | before the agent starts a run | text: DESIGN.md plus the project status; structured: `{rounds, passed}` |
 | 4 | `ah_fork_variant(name)` | when the session forks or the architect asks for a variant | `{branch: "variant/<name>", created, head}` |

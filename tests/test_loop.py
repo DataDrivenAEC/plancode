@@ -59,3 +59,15 @@ def test_max_rounds_bounds_the_loop(clinic_design_path, tmp_path):
     result = run_loop(d, effective_parameters(d), tmp_path, max_rounds=1)
     assert result["converged"] is False
     assert "1 round" in result["reason"]
+
+
+def test_rounds_continue_after_the_ones_already_recorded(clinic_design_path, tmp_path):
+    """The MCP run_loop starts in a project whose hooks already wrote round-01: it must not overwrite it."""
+    d = load_design(clinic_design_path)
+    rounds = tmp_path / "rounds"
+    rounds.mkdir()
+    (rounds / "round-01.json").write_text('{"round": 1, "kept": true}\n')
+    result = run_loop(d, effective_parameters(d), tmp_path, max_rounds=5)
+    assert json.loads((rounds / "round-01.json").read_text()) == {"round": 1, "kept": True}
+    assert [r["round"] for r in result["rounds"]] == [2, 3]
+    assert sorted(p.name for p in rounds.glob("*.json")) == ["round-01.json", "round-02.json", "round-03.json"]

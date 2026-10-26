@@ -12,20 +12,13 @@ from __future__ import annotations
 import json
 import pathlib
 
-from .checks import failures, run_rules
+from .checks import fail_text, kinds_line, run_rules, write_round
 from .project import MODEL_DIR, git
 from .revise import propose_revisions
 
 
 def _rounds(project) -> list[pathlib.Path]:
-    return sorted((pathlib.Path(project) / MODEL_DIR / "rounds").glob("round-*.json"))
-
-
-def _fail_text(fails: list[dict], limit: int = 12) -> str:
-    lines = [f"- [{f['kind']}] {f['rule']} @ {f['element']}: {f['message']}" for f in fails[:limit]]
-    if len(fails) > limit:
-        lines.append(f"- … and {len(fails) - limit} more")
-    return "\n".join(lines)
+    return sorted((pathlib.Path(project) / MODEL_DIR / "rounds").glob("round-*.json"), key=lambda p: int(p.stem[6:]))
 
 
 def after_step(project) -> dict:
@@ -34,31 +27,23 @@ def after_step(project) -> dict:
     if not model_path.exists():
         return {"round": None, "passed": False, "text": "arch-harness: no model to check yet (model/model.json)."}
     report = run_rules(model_path)
-    fails = failures(report)
     params = json.loads(model_path.read_text())["parameters"]
     revisions = [] if report["passed"] else propose_revisions(report, params)
-    n = len(_rounds(project)) + 1
-    record = {"round": n, "source": "after_step", "parameters": params, "passed": report["passed"],
-              "by_kind": report["by_kind"], "unconfirmed_kinds": report["unconfirmed_kinds"],
-              "failures": [{k: f[k] for k in ("rule", "kind", "element", "message")} for f in fails],
-              "revisions": revisions}
-    path = project / MODEL_DIR / "rounds" / f"round-{n:02d}.json"
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(record, indent=1, ensure_ascii=False) + "\n")
-    k = report["by_kind"]
-    head = (f"arch-harness rules, round {n}: " + ("ALL PASS" if report["passed"] else "FAILING") + " — " +
-            ", ".join(f"{x} {k[x]['passed']} passed/{k[x]['failed']} failed" for x in ("code", "geometry", "brief")))
+    record = write_round(project / MODEL_DIR / "rounds", report, params, revisions, source="after_step")
+    n = record["round"]
+    text = (f"arch-harness rules, round {n}: " + ("ALL PASS" if report["passed"] else "FAILING") + " — " +
+            kinds_line(report["by_kind"]))
     if report["unconfirmed_kinds"]:
-        head += f"; unconfirmed (nothing checked): {', '.join(report['unconfirmed_kinds'])}"
-    text = head
-    if fails:
-        text += "\n" + _fail_text(fails)
+        text += f"; unconfirmed (nothing checked): {', '.join(report['unconfirmed_kinds'])}"
+    if record["failures"] or record["unconfirmed_rules"]:
+        text += "\n" + fail_text(record)
     if revisions:
         text += "\nDeterministic fixes (apply as overrides): " + ", ".join(
             f"{r['param']} {r['from']}→{r['to']}" for r in revisions)
-    elif fails:
+    elif not report["passed"]:
         text += "\nNo parameter fix: these need a layout decision (see plan_svg and the generator notes)."
-    return {"round": n, "passed": report["passed"], "by_kind": k, "failures": record["failures"],
+    return {"round": n, "passed": report["passed"], "by_kind": record["by_kind"], "failures": record["failures"],
+            "unconfirmed_rules": record["unconfirmed_rules"],
             "revisions": revisions, "text": text}
 
 
@@ -69,7 +54,7 @@ def before_settle(project, max_rounds: int = 5, since_round: int = 0) -> dict:
     last = json.loads(rounds[-1].read_text())
     if last["passed"]:
         return {"settle": True, "reason": f"all three rule kinds pass (round {last['round']})"}
-    summary = _fail_text([dict(f) for f in last["failures"]], limit=6)
+    summary = fail_text(last, 6)
     if len(rounds) - since_round >= max_rounds:
         return {"settle": True, "reason": f"cannot converge within {max_rounds} round(s); still failing:\n{summary}"}
     return {"settle": False, "reason": f"rules still fail (round {last['round']}); fix them before finishing:\n{summary}"}

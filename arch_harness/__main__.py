@@ -15,6 +15,7 @@ import shutil
 import sys
 
 from . import hooks
+from .checks import kinds_line
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 
@@ -33,9 +34,7 @@ def _demo(args):
         for line in v["round_log"]:
             print(f"   {line}")
         print(f"   {v['reason']}")
-        k = v["last"]["by_kind"]
-        print("   final rules: " + ", ".join(f"{x} {k[x]['passed']} passed/{k[x]['failed']} failed"
-                                            for x in ("code", "geometry", "brief")))
+        print("   final rules: " + kinds_line(v["last"]["by_kind"]))
         if v["cost"]:
             c = v["cost"]
             print(f"   cost (materials, illustrative data): EUR {c['grand_total_eur']:,.0f} = EUR "
