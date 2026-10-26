@@ -1,5 +1,6 @@
 """arch-harness command line.
 
+  python -m arch_harness init --example clinic --out DIR                      a new design project (git) from an example
   python -m arch_harness demo [--example clinic] [--out build/demo-clinic]   deterministic study, no model, offline
   python -m arch_harness hook <after-step|before-settle|context|fork-variant> --project DIR [--name N]
   python -m arch_harness serve --project DIR                                 MCP server on stdio
@@ -52,6 +53,9 @@ def main(argv=None):
     d.add_argument("--example", default="clinic")
     d.add_argument("--out")
     d.add_argument("--max-rounds", type=int, default=5)
+    i = sub.add_parser("init")
+    i.add_argument("--example", default="clinic")
+    i.add_argument("--out", required=True)
     h = sub.add_parser("hook")
     h.add_argument("name", choices=["after-step", "before-settle", "context", "fork-variant"])
     h.add_argument("--project", default=".")
@@ -66,6 +70,10 @@ def main(argv=None):
     args = ap.parse_args(argv)
     if args.cmd == "demo":
         return _demo(args)
+    if args.cmd == "init":
+        from .project import init_project
+        print(init_project(ROOT / "examples" / args.example, args.out))
+        return 0
     if args.cmd == "hook":
         if args.name == "after-step":
             out = hooks.after_step(args.project)

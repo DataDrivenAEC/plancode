@@ -75,6 +75,12 @@ def before_settle(project, max_rounds: int = 5, since_round: int = 0) -> dict:
     return {"settle": False, "reason": f"rules still fail (round {last['round']}); fix them before finishing:\n{summary}"}
 
 
+def status(project) -> dict:
+    """How many rounds are recorded and whether the last passed (None before the first check)."""
+    rounds = _rounds(project)
+    return {"rounds": len(rounds), "passed": json.loads(rounds[-1].read_text())["passed"] if rounds else None}
+
+
 def context(project) -> str:
     project = pathlib.Path(project)
     design = (project / "DESIGN.md").read_text(encoding="utf-8")

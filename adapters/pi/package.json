@@ -1,0 +1,16 @@
+{
+  "name": "@arch-harness/pi",
+  "version": "0.0.1",
+  "description": "arch-harness adapter for pi: the four hook-contract calls on pi's extension events, the MCP tools as pi tools.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "keywords": ["pi-package", "architecture", "mcp"],
+  "pi": {
+    "extensions": ["./extension/index.ts"],
+    "skills": ["./skills"]
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*",
+    "typebox": "*"
+  }
+}

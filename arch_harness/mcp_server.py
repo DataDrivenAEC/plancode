@@ -71,7 +71,7 @@ class Server:
     def call(self, name: str, a: dict):
         p = self.project
         if name == "ah_context":
-            return hooks.context(p), None
+            return hooks.context(p), hooks.status(p)
         if name == "ah_after_step":
             out = hooks.after_step(p)
             return out["text"], out

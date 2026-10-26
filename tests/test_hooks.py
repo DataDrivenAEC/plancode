@@ -76,3 +76,10 @@ def test_study_runs_each_variant_on_its_branch_with_cost(project):
     assert git(project, "branch", "--show-current").strip() == "main"
     comparison = (project / "comparison.md").read_text()
     assert "masonry" in comparison and "timber" in comparison and "illustrative" in comparison.lower()
+
+
+def test_status_counts_rounds_for_a_harness(project):
+    assert hooks.status(project) == {"rounds": 0, "passed": None}
+    build(project)
+    hooks.after_step(project)
+    assert hooks.status(project) == {"rounds": 1, "passed": False}

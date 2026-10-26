@@ -86,3 +86,9 @@ def test_cli_hook_prints_json(tmp_path, clinic_design_path):
     out = subprocess.run([sys.executable, "-m", "arch_harness", "hook", "before-settle", "--project", str(project)],
                          capture_output=True, text=True, check=True)
     assert json.loads(out.stdout)["settle"] is True
+
+
+def test_cli_init_creates_a_project(tmp_path):
+    out = subprocess.run([sys.executable, "-m", "arch_harness", "init", "--example", "clinic", "--out",
+                          str(tmp_path / "p")], capture_output=True, text=True, check=True)
+    assert (tmp_path / "p" / "DESIGN.md").exists() and out.stdout.strip().endswith("p")
