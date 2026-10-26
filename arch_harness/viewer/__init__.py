@@ -1,6 +1,6 @@
 """Live viewer: a local three.js page (no build step) and a small JSON API over the model.
 
-GET /              the page (three.js from a pinned CDN version)
+GET /              the page; GET /vendor/three/... three.js (THREE_VERSION, MIT) shipped in the repo, so the page runs offline
 GET /api/version   a hash of model.json and the latest round; the page polls it and reloads the model on change
 GET /api/model     solids (mm), elements failing the latest round, status
 POST /api/select   the element the architect clicked, kept in .arch-harness/selection.json: the seam for steering
@@ -18,6 +18,7 @@ from ..project import MODEL_DIR
 
 THREE_VERSION = "0.170.0"
 PAGE = pathlib.Path(__file__).with_name("index.html")
+VENDOR = pathlib.Path(__file__).with_name("vendor")
 
 
 def _latest_round(project: pathlib.Path):
@@ -62,6 +63,12 @@ def make_server(project, port: int, host: str = "127.0.0.1") -> http.server.Thre
         def do_GET(self):
             if self.path in ("/", "/index.html"):
                 self._send(PAGE.read_text().replace("{{THREE_VERSION}}", THREE_VERSION).encode(), "text/html; charset=utf-8")
+            elif self.path.startswith("/vendor/"):
+                f = (VENDOR / self.path[len("/vendor/"):]).resolve()
+                if f.is_relative_to(VENDOR.resolve()) and f.is_file():
+                    self._send(f.read_bytes(), "text/javascript" if f.suffix == ".js" else "text/plain; charset=utf-8")
+                else:
+                    self._send(b"not found", "text/plain", 404)
             elif self.path == "/api/version":
                 self._send(json.dumps({"version": _version(project)}).encode(), "application/json")
             elif self.path == "/api/model":

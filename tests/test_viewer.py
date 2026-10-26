@@ -25,10 +25,14 @@ def get(url):
         return r.read().decode()
 
 
-def test_page_pins_three(served):
+def test_page_loads_nothing_from_the_internet(served):
+    """The viewer runs offline: three.js (pinned THREE_VERSION, MIT) ships in the repo and the page fetches only its own server."""
     _, base = served
     html = get(base + "/")
-    assert f"three@{THREE_VERSION}/build/three.module.js" in html
+    assert "http://" not in html and "https://" not in html
+    assert f"three@{THREE_VERSION}" in get(base + "/vendor/three/VERSION")
+    assert "OrbitControls" in get(base + "/vendor/three/examples/jsm/controls/OrbitControls.js")
+    assert get(base + "/vendor/three/build/three.module.js").startswith("/**")
 
 
 def test_model_endpoint_serves_solids_and_failures(served):

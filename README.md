@@ -6,7 +6,8 @@ today's open-source agent harnesses through MCP**, a standard interface any harn
 Idea-first: the architect writes the intent in `DESIGN.md` (brief, room programme, site, constraints, ideas).
 Agents generate building form from it, test every variant against building-code and brief rules, compare
 variants by rules and cost, and the architect steers. Each variant lives on its own git branch, and the demo commits
-every round. It runs on your own computer; with a local model no design data leaves it.
+every round. It runs on your own computer; with a local model no design data leaves it, and the viewer needs no internet
+(three.js ships in the repo).
 
 **Status:** first working demo (v0.0.1). Apache-2.0. An independent open-source project hosted under the
 DataDrivenAEC GitHub organisation; it is not part of DataDrivenAEC's commercial services. Contributions from
@@ -85,7 +86,8 @@ Apache-2.0. One test downloads a sample IFC from
 [buildingSMART Sample-Test-Files](https://github.com/buildingSMART/Sample-Test-Files) at test time (it is never
 committed; the test is skipped when offline): credit to buildingSMART International. Built on
 [IfcOpenShell](https://ifcopenshell.org), [OpenUSD](https://openusd.org), [three.js](https://threejs.org) and
-[pi](https://github.com/earendil-works/pi).
+[pi](https://github.com/earendil-works/pi). three.js 0.170.0 (MIT, its licence beside it) is included unchanged in
+`arch_harness/viewer/vendor/three/`.
 
 The DIN 18040-1 values are quoted from the public reproduction of DIN 18040-1:2010-10 by the Bavarian State
 Ministry ("Planungsgrundlagen des barrierefreien Bauens", 2015), the MBO from its November 2002 version as last
