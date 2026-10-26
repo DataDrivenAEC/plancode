@@ -9,9 +9,8 @@ variants by rules and cost, and the architect steers. Each variant lives on its 
 every round. It runs on your own computer; with a local model no design data leaves it, and the viewer needs no internet
 (three.js ships in the repo).
 
-**Status:** first working demo (v0.0.1). Apache-2.0. An independent open-source project hosted under the
-DataDrivenAEC GitHub organisation; it is not part of DataDrivenAEC's commercial services. Contributions from
-anyone are welcome.
+**Status:** first working demo (v0.0.1). Apache-2.0. An independent open-source project; it is not part of
+DataDrivenAEC's commercial services. Contributions from anyone are welcome.
 
 ## The three parts
 
@@ -35,7 +34,7 @@ anyone are welcome.
 Needs git, conda (or mamba) and, for the agent adapter, Node ≥ 22.19.
 
 ```bash
-git clone https://github.com/DataDrivenAEC/arch-harness && cd arch-harness
+git clone https://github.com/awesome-aec/arch-harness && cd arch-harness
 conda env create -p .conda-ah -f environment.yml      # Python 3.12, IfcOpenShell 0.8.5, usd-core 26.8, pytest
 .conda-ah/bin/python -m pytest                        # the unit tests, offline, no model, no key
 ```

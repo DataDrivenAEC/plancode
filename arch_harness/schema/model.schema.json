@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/DataDrivenAEC/arch-harness/schema/model-0.1.json",
+  "$id": "https://github.com/awesome-aec/arch-harness/schema/model-0.1.json",
   "title": "arch-harness model 0.1",
   "description": "The design data: the source of truth. All lengths are integer millimetres in site coordinates (x east, y north, z up from storey 0). OpenUSD, IFC and SVG are renders of this.",
   "type": "object",
