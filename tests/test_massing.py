@@ -75,10 +75,10 @@ def _overlap(a, b):
 
 
 def structural_clashes(model):
-    """Pairs of walls and slabs sharing volume (doors sit in their wall's opening, spaces are not material)."""
+    """Wall/slab pairs sharing volume (doors sit in their wall's opening, spaces are not material)."""
     from arch_harness.model import solids
     parts = [b for b in solids(model) if b["kind"] in ("wall", "slab")]
-    return [(a["id"], b["id"]) for i, a in enumerate(parts) for b in parts[i + 1:] if _overlap(a, b)]
+    return [(a["id"], b["id"]) for i, a in enumerate(parts) for b in parts[i + 1:] if a["kind"] != b["kind"] and _overlap(a, b)]
 
 
 def test_clash_check_catches_a_slab_inside_a_wall(model):

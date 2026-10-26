@@ -71,3 +71,10 @@ def test_rounds_continue_after_the_ones_already_recorded(clinic_design_path, tmp
     assert json.loads((rounds / "round-01.json").read_text()) == {"round": 1, "kept": True}
     assert [r["round"] for r in result["rounds"]] == [2, 3]
     assert sorted(p.name for p in rounds.glob("*.json")) == ["round-01.json", "round-02.json", "round-03.json"]
+
+
+def test_raising_the_storey_leaves_room_for_the_slab_above():
+    report = {"results": [{"rule": "geometry/opening-fits-wall", "outcome": "failed", "element": "L0-D02",
+                           "data": {"wall_height": 1780, "needed": 2050}}]}
+    [rev] = propose_revisions(report, {"storey_height": 2000, "slab_thickness": 220})
+    assert rev["to"] == 2100 + 220  # the wall is the storey minus the slab above it

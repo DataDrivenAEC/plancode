@@ -25,8 +25,8 @@ def propose_revisions(report: dict, params: dict) -> list[dict]:
             param, value = fix[0], fix[1](r["data"])
         elif r["rule"] == "geometry/opening-fits-wall" and "wall_height" in r["data"]:
             # raise the wall to the door, never shrink the door below its code minimum
-            # (next 100 mm above the door, so a lintel fits)
-            param, value = "storey_height", (r["data"]["needed"] // 100 + 1) * 100
+            # (next 100 mm above the door, so a lintel fits, plus the slab above that the wall stops under)
+            param, value = "storey_height", (r["data"]["needed"] // 100 + 1) * 100 + params.get("slab_thickness", 0)
         else:
             continue
         if value > targets.get(param, (0, ""))[0]:

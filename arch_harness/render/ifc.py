@@ -106,6 +106,8 @@ def export_ifc(model: dict, path) -> pathlib.Path:
         place_box(opening, box)
         api.run("feature.add_feature", f, feature=opening, element=walls[d["wall"]])
         e = api.run("root.create_entity", f, ifc_class="IfcDoor", name=d["id"])
+        # The model states one door width, the clear width (DIN 18040-1); it has no leaf or frame width, so
+        # OverallWidth carries that clear width, not a frame width.
         e.OverallWidth, e.OverallHeight = float(d["width"]), float(d["height"])
         place_box(e, {"min": box["min"], "max": box["max"]})
         api.run("feature.add_filling", f, opening=opening, element=e)

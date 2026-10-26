@@ -3,7 +3,7 @@
 The section is double-loaded: a straight corridor with rooms on both sides, the core ('each' rooms) at the west
 end of every storey so it stacks. The footprint is the buildable area (site minus the MBO § 6 Abstandsfläche for
 the building height) shortened to the length the programme needs; storeys are the fewest that hold the
-programme within max_storeys. What does not fit is left out and said in `notes`: the rules then report it.
+programme within max_storeys. A wall stops at the underside of the slab above it (storey height minus slab). What does not fit is left out and said in `notes`: the rules then report it.
 """
 from __future__ import annotations
 
@@ -124,7 +124,7 @@ def _model(design, p, n, site, bx, by, length, depth, strips, notes) -> dict:
         wn = iter(range(1, 10_000))
         def wall(x0, y0, x1, y1, t, external):
             w = {"id": f"{sid}-W{next(wn):03d}", "storey": sid, "x0": bx + x0, "y0": by + y0, "x1": bx + x1,
-                 "y1": by + y1, "thickness": t, "height": sh, "external": external}
+                 "y1": by + y1, "thickness": t, "height": sh - p["slab_thickness"], "external": external}
             walls.append(w)
             return w
         h = te // 2
