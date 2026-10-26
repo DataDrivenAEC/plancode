@@ -174,7 +174,6 @@ def estimate(model_path, source, outdir=None) -> dict:
     skipped = []       # (guid, type, reason)
     unmapped_seen = {} # material -> count of elements
     no_carbon = {}     # priced material key -> count with no carbon factor
-    used_keys = set()  # price-book keys actually used (for dynamic notes)
     carbon_total = 0.0
 
     def add_line(el, material_name, qty, unit, price_key):
@@ -185,7 +184,6 @@ def estimate(model_path, source, outdir=None) -> dict:
             rows.append([el.GlobalId, el.is_a(), material_name, round(qty, 4), unit or "",
                          0.0, 0.0, "(unpriced)", "", "missing from price list"])
             return
-        used_keys.add(pr.material)
         line_total = qty * pr.unit_price_eur
         factor = CARBON.get(pr.material)
         if factor is None:
@@ -305,14 +303,14 @@ def estimate(model_path, source, outdir=None) -> dict:
         "basis": basis, "data_source": source.name,
     }
     if outdir is not None:
-        _write(result, rows, trade_tot, skipped, used_keys, PRICE, outdir)
+        _write(result, rows, trade_tot, skipped, PRICE, outdir)
     return result
 
 
 TRADE_ORDER = ["Structure", "Envelope", "Openings", "Finishes", "MEP"]
 
 
-def _write(result, rows, trade_tot, skipped, used_keys, PRICE, outdir):
+def _write(result, rows, trade_tot, skipped, PRICE, outdir):
     os.makedirs(outdir, exist_ok=True)
     with open(os.path.join(outdir, "cost-breakdown.csv"), "w", newline="") as fh:
         wtr = csv.writer(fh)
@@ -377,28 +375,14 @@ def _write(result, rows, trade_tot, skipped, used_keys, PRICE, outdir):
         fh.write("\n".join(lines) + "\n")
 
 
-class _CsvSource:
-    """A price CSV given on the command line, read through the data-source contract."""
-    def __init__(self, path):
-        from ..data_sources.illustrative_materials import IllustrativeMaterials
-        self._inner = IllustrativeMaterials(path)
-        self.name, self.provides = self._inner.path.name, self._inner.provides
-
-    def basis(self):
-        return self._inner.basis()
-
-    def table(self, kind):
-        return self._inner.table(kind)
-
-
 def main(argv=None):
-    from ..data_sources.illustrative_materials import CSV
+    from ..data_sources.illustrative_materials import CSV, IllustrativeMaterials
     ap = argparse.ArgumentParser(description="Cost estimate from an IFC model + a unit-price book.")
     ap.add_argument("--model", required=True, help="path to the .ifc model")
     ap.add_argument("--prices", default=str(CSV), help="price CSV (data-source format)")
     ap.add_argument("--outdir", default="outputs", help="directory for the two output files")
     args = ap.parse_args(argv)
-    r = estimate(args.model, _CsvSource(args.prices), args.outdir)
+    r = estimate(args.model, IllustrativeMaterials(args.prices), args.outdir)
     print(f"rows={r['rows']}  skipped={len(r['skipped'])}  grand=EUR {r['grand_total_eur']:,.0f}  "
           f"carbon={r['carbon_kgco2e']:,.0f} kgCO2e")
     for tr in TRADE_ORDER:

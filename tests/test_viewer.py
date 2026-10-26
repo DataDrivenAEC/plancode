@@ -55,3 +55,12 @@ def test_selection_is_recorded_for_the_agent(served):
                                  headers={"Content-Type": "application/json"})
     urllib.request.urlopen(req, timeout=5).read()
     assert json.loads((project / ".arch-harness" / "selection.json").read_text())["id"] == "L0-D01"
+
+
+def test_page_escapes_names_before_building_html(served):
+    """Element ids, names and messages come from DESIGN.md: no innerHTML interpolates them raw."""
+    _, base = served
+    html = get(base + "/")
+    assert "const esc = " in html
+    for raw in ("${s.id}", "${s.name}", "${s.kind}", "${s.storey}", "${f.rule}", "${f.message}", "${k}"):
+        assert raw not in html, raw

@@ -122,6 +122,8 @@ function build() {
   }
 }
 
+const esc = x => String(x).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+
 function panel() {
   document.getElementById("title").textContent = data.project || "arch-harness";
   const st = data.status;
@@ -134,14 +136,14 @@ function panel() {
     const v = st ? st.by_kind[k] : null;
     const div = document.createElement("div"); div.className = "kind";
     const cls = !v ? "" : v.failed ? "bad" : v.passed ? "ok" : "";
-    div.innerHTML = `<b>${k}</b><span class="${cls}">${v ? `✓${v.passed} ✗${v.failed}` : "–"}</span>`;
+    div.innerHTML = `<b>${esc(k)}</b><span class="${cls}">${v ? `✓${v.passed} ✗${v.failed}` : "–"}</span>`;
     kinds.appendChild(div);
   }
   const storeys = document.getElementById("storeys");
   storeys.innerHTML = "";
   for (const s of data.storeys || []) {
     const l = document.createElement("label"); l.className = "chip";
-    l.innerHTML = `<input type="checkbox" ${hidden.has(s.id) ? "" : "checked"}>${s.id}`;
+    l.innerHTML = `<input type="checkbox" ${hidden.has(s.id) ? "" : "checked"}>${esc(s.id)}`;
     l.querySelector("input").onchange = e => { e.target.checked ? hidden.delete(s.id) : hidden.add(s.id); build(); };
     storeys.appendChild(l);
   }
@@ -151,9 +153,9 @@ function showSelection(s) {
   const sel = document.getElementById("sel");
   if (!s) { sel.innerHTML = '<span class="sub">Click an element to see its id.</span>'; return; }
   const fails = (data.status?.failures || []).filter(f => f.element === s.id || (f.element || "").split("|").includes(s.id));
-  sel.innerHTML = `<div><code>${s.id}</code> · ${s.kind}${s.name ? " · " + s.name : ""} · storey ${s.storey}</div>` +
+  sel.innerHTML = `<div><code>${esc(s.id)}</code> · ${esc(s.kind)}${s.name ? " · " + esc(s.name) : ""} · storey ${esc(s.storey)}</div>` +
     `<div class="sub">${s.max.map((v, i) => v - s.min[i]).join(" × ")} mm</div>` +
-    (fails.length ? `<ul class="fails">${fails.map(f => `<li>${f.rule}: ${f.message}</li>`).join("")}</ul>` : "");
+    (fails.length ? `<ul class="fails">${fails.map(f => `<li>${esc(f.rule)}: ${esc(f.message)}</li>`).join("")}</ul>` : "");
   fetch("/api/select", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: s.id }) });
 }
 
