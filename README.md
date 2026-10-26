@@ -5,11 +5,12 @@ today's open-source agent harnesses through MCP**, a standard interface any harn
 
 Idea-first: the architect writes the intent in `DESIGN.md` (brief, room programme, site, constraints, ideas).
 Agents generate building form from it, test every variant against building-code and brief rules, compare
-variants by rules and cost, and the architect steers. Every idea, variant and decision is a git commit. It runs
-on your own computer; with a local model nothing leaves it.
+variants by rules and cost, and the architect steers. Each variant lives on its own git branch, and the demo commits
+every round. It runs on your own computer; with a local model no design data leaves it.
 
 **Status:** first working demo (v0.0.1). Apache-2.0. An independent open-source project hosted under the
-DataDrivenAEC GitHub organisation; contributions from anyone are welcome.
+DataDrivenAEC GitHub organisation; it is not part of DataDrivenAEC's commercial services. Contributions from
+anyone are welcome.
 
 ## The three parts
 
