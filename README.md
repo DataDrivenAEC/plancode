@@ -9,8 +9,7 @@ variants by rules and cost, and the architect steers. Each variant lives on its 
 every round. It runs on your own computer; with a local model no design data leaves it, and the viewer needs no internet
 (three.js ships in the repo).
 
-**Status:** first working demo (v0.0.1). Apache-2.0. An independent open-source project; it is not part of
-DataDrivenAEC's commercial services. Contributions from anyone are welcome.
+**Status:** first working demo (v0.0.1). Apache-2.0. An independent open-source project. Contributions from anyone are welcome.
 
 ## The three parts
 
