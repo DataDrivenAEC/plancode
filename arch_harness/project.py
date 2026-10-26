@@ -15,7 +15,7 @@ from .render.svg import plan_svg
 from .render.usd import write_usd
 
 MODEL_DIR = "model"
-PROJECT_GITIGNORE = "# renders that are rebuilt from model.json\nmodel/model.ifc\n"
+PROJECT_GITIGNORE = "# renders that are rebuilt from model.json, and local viewer state\nmodel/model.ifc\n.arch-harness/\n"
 
 
 def git(project, *args: str) -> str:
