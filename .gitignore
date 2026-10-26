@@ -6,5 +6,5 @@ __pycache__/
 *.pyc
 .pytest_cache/
 # demo output: generated project working copies, renders, test downloads
-build/
+/build/
 .cache/
