@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/DataDrivenAEC/arch-harness/schema/model-0.1.json",
+  "title": "arch-harness model 0.1",
+  "description": "The design data: the source of truth. All lengths are integer millimetres in site coordinates (x east, y north, z up from storey 0). OpenUSD, IFC and SVG are renders of this.",
+  "type": "object",
+  "required": ["schema", "units", "project", "site", "building", "programme", "parameters", "storeys", "spaces", "walls", "doors", "slabs", "notes"],
+  "properties": {
+    "schema": {"const": "arch-harness.model/0.1"},
+    "units": {"const": "mm"},
+    "project": {"type": "object", "required": ["name"]},
+    "site": {"type": "object", "required": ["width", "depth"], "properties": {"width": {"type": "integer"}, "depth": {"type": "integer"}}},
+    "building": {"type": "object", "required": ["x", "y", "w", "d", "height"]},
+    "programme": {"type": "array", "items": {"type": "object", "required": ["name", "area_m2", "count", "storey"]}},
+    "parameters": {"type": "object"},
+    "generator": {"type": "object"},
+    "notes": {"type": "array", "items": {"type": "string"}},
+    "storeys": {"type": "array", "items": {"type": "object", "required": ["id", "name", "elevation", "height"]}},
+    "spaces": {"type": "array", "items": {"type": "object", "required": ["id", "name", "programme", "storey", "use", "x", "y", "w", "d"],
+      "properties": {"use": {"enum": ["room", "corridor"]}}}},
+    "walls": {"type": "array", "items": {"type": "object", "required": ["id", "storey", "x0", "y0", "x1", "y1", "thickness", "height", "external"]}},
+    "doors": {"type": "array", "items": {"type": "object", "required": ["id", "storey", "wall", "offset", "width", "height"],
+      "description": "width and height are the clear opening (lichte Breite, lichte Höhe); offset is along the host wall from its start point"}},
+    "slabs": {"type": "array", "items": {"type": "object", "required": ["id", "storey", "x", "y", "w", "d", "z", "thickness", "role"]}}
+  }
+}
