@@ -1,0 +1,13 @@
+material,unit,unit_price_eur,trade_group,kgco2e_per_unit,description
+concrete_c30,m3,180,Structure,300,reinforced concrete C30/37 incl. formwork allowance
+masonry_calcium_silicate,m3,230,Structure,250,calcium silicate block masonry
+clt,m3,900,Structure,150,cross-laminated timber panel (fossil emissions only)
+mineral_wool,m3,90,Envelope,40,mineral wool insulation board
+wood_fibre,m3,160,Envelope,30,wood fibre insulation board
+render,m2,22,Envelope,6,mineral render
+timber_cladding,m2,65,Envelope,8,timber cladding boards
+plaster,m2,12,Finishes,4,gypsum plaster
+gypsum_board,m2,9,Finishes,3,gypsum board (one face)
+screed,m3,150,Finishes,250,cement screed
+door_exterior_security,unit,1800,Openings,120,exterior entrance door
+door_interior_wood,unit,450,Openings,40,interior wooden door 90 cm
