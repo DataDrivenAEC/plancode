@@ -1,0 +1,14 @@
+{
+  "name": "arch-harness",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Development tooling for arch-harness: pins the pi runtime used by the first adapter (adapters/pi).",
+  "license": "Apache-2.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "devDependencies": {
+    "@earendil-works/pi-coding-agent": "0.87.1"
+  }
+}

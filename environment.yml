@@ -1,0 +1,12 @@
+# Project-local Python environment (conda-forge; pip wheels of ifcopenshell fail on some Linux hosts).
+#   conda env create -p .conda-ah -f environment.yml
+name: arch-harness
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12.16
+  - ifcopenshell=0.8.5   # IFC export and read-back (a render target, never the source of truth)
+  - pytest=9.1.1         # rules are pytest tests; also the unit test runner
+  - pip
+  - pip:
+      - usd-core==26.8   # OpenUSD: the model's text layers (.usda)

@@ -1,0 +1,13 @@
+[project]
+name = "arch-harness"
+version = "0.0.1"
+description = "Idea-first architecture design with AI agents: generators, rules as tests, cost and export behind MCP."
+license = "Apache-2.0"
+requires-python = ">=3.12"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-p no:cacheprovider"
+markers = [
+  "network: needs the internet (skipped with a reason when offline)",
+]
